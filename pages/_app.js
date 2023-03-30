@@ -4,7 +4,7 @@ import "@/styles/globals.css";
 
 export default function App({ Component, pageProps }) {
   return (
-    <div>
+    <div className="overflow-hidden">
       <Head>
         <title>Task Manager</title>
         <link rel="icon" href="/favicon.ico" />

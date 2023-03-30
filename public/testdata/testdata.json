@@ -1,0 +1,9 @@
+[
+  {
+    "id": 0,
+    "name": "My Tasks",
+    "columns": [
+      { "name": "Todo", "tasks": [{ "name": "Task 1" }, { "name": "Task2" }] }
+    ]
+  }
+]
