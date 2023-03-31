@@ -1,6 +1,18 @@
+import { LocalDataService } from "@/services/LocalDataService";
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({ isOpen, toggleSidebar, page }) => {
+  const dataService = useMemo(() => new LocalDataService(), []);
+
+  const [projects, setProjects] = useState([]);
+  useEffect(() => {
+    dataService.getProjects().then((ps) => {
+      setProjects(ps);
+    });
+  }, [dataService]);
+
   return (
     <div
       className={`fixed lg:static inset-y-0 left-0 w-64 bg-white px-8 py-4 border-r overflow-auto z-30 lg:translate-x-0 transform ${
@@ -42,52 +54,88 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           Scrumboard
         </h2>
         <div className="mt-2 -mx-3">
-          <a
-            href="#"
-            className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-200"
-          >
-            <span className="text-sm font-medium text-gray-900">Home</span>
-          </a>
-          <a
-            href="#"
-            className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium bg-gradient-to-r from-purple-700 to-blue-500 text-gray-200"
-            onClick={() => console.log("clicked")}
-          >
-            <span className="text-sm font-medium text-white ">My Tasks</span>
-            <span className="text-xs font-semibold text-white">36</span>
-          </a>
-          <a
-            href="#"
-            className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-200"
-          >
-            <span className="text-sm font-medium text-gray-900">Reports</span>
-            <span className="text-xs font-semibold text-gray-700">12</span>
-          </a>
+          {page == "home" ? (
+            <Link
+              href="/"
+              className="flex justify-between items-center rounded-lg px-3 py-2 text-sm text-white font-medium bg-gradient-to-r from-purple-700 to-blue-500"
+              onClick={() => console.log("clicked")}
+            >
+              <span className="text-sm font-medium text-white ">Home</span>
+            </Link>
+          ) : (
+            <Link
+              href="/"
+              className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium "
+              onClick={() => console.log("clicked")}
+            >
+              <span className="text-sm font-medium">Home</span>
+            </Link>
+          )}
+          {page == "my-tasks" ? (
+            <Link
+              href="/my-tasks"
+              className="flex justify-between items-center rounded-lg px-3 py-2 text-sm text-white font-medium bg-gradient-to-r from-purple-700 to-blue-500"
+              onClick={() => console.log("clicked")}
+            >
+              <span className="text-sm font-medium text-white ">My Tasks</span>
+            </Link>
+          ) : (
+            <Link
+              href="/my-tasks"
+              className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium "
+              onClick={() => console.log("clicked")}
+            >
+              <span className="text-sm font-medium ">My Tasks</span>
+            </Link>
+          )}
+          {page == "reports" ? (
+            <Link
+              href="/reports"
+              className="flex justify-between items-center rounded-lg px-3 py-2 text-sm text-white font-medium bg-gradient-to-r from-purple-700 to-blue-500"
+              onClick={() => console.log("clicked")}
+            >
+              <span className="text-sm font-medium text-white ">Reports</span>
+            </Link>
+          ) : (
+            <Link
+              href="/reports"
+              className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium "
+              onClick={() => console.log("clicked")}
+            >
+              <span className="text-sm font-medium ">Reports</span>
+            </Link>
+          )}
         </div>
 
         <h2 className="mt-8 text-xs font-semibold text-gray-600 uppercase tracking-wide">
           Projects
         </h2>
         <div className="mt-2 -mx-3">
-          <a
-            href="#"
-            className="flex justify-between items-centerrounded-lg px-3 py-2 text-sm font-medium text-gray-200"
-          >
-            <span className="text-sm font-medium text-gray-900">All</span>
-          </a>
-          <a
-            href="#"
-            className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium  text-gray-200"
-            onClick={() => console.log("clicked")}
-          >
-            <span className="text-sm font-medium text-gray-900">Today</span>
-          </a>
-          <a
-            href="#"
-            className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-200"
-          >
-            <span className="text-sm font-medium text-gray-900">Sprint</span>
-          </a>
+          {projects.map((p, index) => {
+            return (
+              <div key={index}>
+                {page == `projects.${p.id}` ? (
+                  <Link
+                    href="/reports"
+                    className="flex justify-between items-center rounded-lg px-3 py-2 text-sm text-white font-medium bg-gradient-to-r from-purple-700 to-blue-500"
+                    onClick={() => console.log("clicked")}
+                  >
+                    <span className="text-sm font-medium text-white ">
+                      {p.name}
+                    </span>
+                  </Link>
+                ) : (
+                  <Link
+                    href={`/projects/${p.id}`}
+                    className="flex justify-between items-center rounded-lg px-3 py-2 text-sm font-medium "
+                    onClick={() => console.log("clicked")}
+                  >
+                    <span className="text-sm font-medium ">{p.name}</span>
+                  </Link>
+                )}
+              </div>
+            );
+          })}
         </div>
       </nav>
     </div>

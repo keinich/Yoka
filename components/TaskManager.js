@@ -16,11 +16,11 @@ import Layout from "@/components/Layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+const TaskManager = ({projectId}) => {
   const dataService = useMemo(() => new LocalDataService(), []);
 
   const [showAddColumnForm, setShowAddColumnForm] = useState(false);
-  const [projectId, setProjectId] = useState(null);
+  
   // const [project, setProject] = useState({ name: "My Tasks", columns: [] });
   const [boardColumns, setBoardColumns] = useState([]);
 
@@ -57,8 +57,8 @@ export default function Home() {
     }
   }
 
-  const getTasks = (column) => {
-    return dataService.getTasksByColumn(column);
+  const getTasks = (columnId) => {
+    return dataService.getTasksByColumn(columnId);
   };
 
   const deleteTask = (t) => {
@@ -125,6 +125,4 @@ export default function Home() {
   );
 }
 
-Home.getLayout = function getLayout(page) {
-  return <Layout page="home">{page}</Layout>;
-};
+export default TaskManager

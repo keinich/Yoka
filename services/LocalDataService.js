@@ -28,6 +28,7 @@ export class LocalDataService {
 
   async getBoardColumns() {
     const columns = localStorage.getItem("boardColumns");
+    console.log("getBoardColumns", columns);
     if (columns) {
       return JSON.parse(columns);
     }
@@ -38,7 +39,7 @@ export class LocalDataService {
     localStorage.setItem("boardColumns", JSON.stringify(columns));
   }
 
-  async getBoardColumns(projectId) {
+  async getBoardColumnsByProjectId(projectId) {
     let columns = localStorage.getItem("boardColumns");
     if (!columns) {
       return [];
@@ -50,6 +51,7 @@ export class LocalDataService {
 
   async addColumn(name, projectId) {
     const columns = await this.getBoardColumns();
+    console.log("adding column to", columns);
 
     const newColumn = {
       id: generateId(10000000),
@@ -65,7 +67,7 @@ export class LocalDataService {
 
   async deleteColumn(column) {
     // delete dependent tasks
-    const tasks = await this.getTasksByColumnId(column.id);
+    const tasks = await this.getTasksByColumn(column.id);
     for (const task of tasks) {
       await this.deleteTask(task);
     }
@@ -99,16 +101,20 @@ export class LocalDataService {
     return [];
   }
 
-  async getTasksByColumnId(columnId) {
+  async getTasksByColumn(column) {
     let tasks = localStorage.getItem("tasks");
-    console.log("getting tasks", columnId);
     console.log("getting tasks", tasks);
+    console.log("getting tasks column", column);
     if (!tasks) {
       return [];
     }
     tasks = JSON.parse(tasks);
-    tasks = tasks.filter((t) => t.boardColumnId == columnId);
-    console.log("getting tasks final", tasks);
+    if (column.projectId) {
+      tasks = tasks.filter((t) => t.boardColumnId == column.id);
+    } else {
+      tasks = tasks.filter((t) => t.userColumnId == column.id);
+      console.log("getting tasks final", tasks);
+    }
     return tasks;
   }
 
@@ -122,11 +128,21 @@ export class LocalDataService {
     let existingTask = tasks.find((t) => t.id == task.id);
     if (!existingTask) {
       task.id = generateId(10000000);
+      if (task.userColumnId == null) {
+        const userColumns = await this.getBoardColumnsByProjectId(null);        
+        if (userColumns.length == 0) {
+          const newUserColumn = await this.addColumn("My Tasks", null);
+          task.userColumnId = newUserColumn.id;
+        } else {
+          task.userColumnId = userColumns[0].id;
+        }
+      }
       tasks.push(task);
     } else {
       existingTask.boardColumnId = task.boardColumnId;
+      existingTask.userColumnId = task.userColumnId;
       existingTask.done = task.done;
-      existingTask.name = task.name;      
+      existingTask.name = task.name;
     }
     this.saveTasks(tasks);
     return task;

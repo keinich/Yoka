@@ -13,7 +13,7 @@
       { "id": 5, "name": "Focus", "projectId": null }
   ],
   "tasks": [
-    { "id": 1, "name": "DnD", "boardColumnId": 1, "userId": 0 },
-    { "id": 2, "name": "Bank Erhardt", "boardColumnId": 5, "userId": 0 }
+    { "id": 1, "name": "DnD", "boardColumnId": 1, "userId": 0, "userColumnId": 4 },
+    { "id": 2, "name": "Bank Erhardt", "boardColumnId": null, "userId": 0, "userColumnId": 5 }
   ]
 }

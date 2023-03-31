@@ -22,7 +22,7 @@ const BoardColumn = ({
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    getTasks(column.id).then((ts) => setTasks(ts));
+    getTasks(column).then((ts) => setTasks(ts));
   }, [column, getTasks]);
 
   const onTextAreaKeyPress = (e) => {
@@ -38,7 +38,21 @@ const BoardColumn = ({
     if (taskName.length === 0) {
       setShowAddTaskForm(false);
     } else {
-      addOrUpdateTask({ name: taskName, boardColumnId: column.id, done: false });
+      if (column.projectId) {
+        addOrUpdateTask({
+          name: taskName,
+          boardColumnId: column.id,
+          done: false,
+          userColumnId: null
+        });
+      } else {
+        addOrUpdateTask({
+          name: taskName,
+          boardColumnId: null,
+          done: false,
+          userColumnId: column.id,
+        });
+      }
 
       setShowAddTaskForm(false);
     }
