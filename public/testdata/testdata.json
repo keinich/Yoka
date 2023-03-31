@@ -1,9 +1,19 @@
-[
-  {
-    "id": 0,
-    "name": "My Tasks",
-    "columns": [
-      { "name": "Todo", "tasks": [{ "name": "Task 1" }, { "name": "Task2" }] }
-    ]
-  }
-]
+{
+  "projects": [
+    {
+      "id": 1,
+      "name": "Task Manager"
+    }
+  ],
+  "boardColumns": [
+      { "id": 1, "name": "New", "projectId": 1 },
+      { "id": 2, "name": "In Progress", "projectId": 1 },
+      { "id": 3, "name": "Done", "projectId": 1 },
+      { "id": 4, "name": "Later", "projectId": null },
+      { "id": 5, "name": "Focus", "projectId": null }
+  ],
+  "tasks": [
+    { "id": 1, "name": "DnD", "boardColumnId": 1, "userId": 0 },
+    { "id": 2, "name": "Bank Erhardt", "boardColumnId": 5, "userId": 0 }
+  ]
+}

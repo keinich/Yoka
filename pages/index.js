@@ -20,12 +20,13 @@ export default function Home() {
 
   const [isOpen, toggleSidebar] = useState(false);
   const [showAddColumnForm, setShowAddColumnForm] = useState(false);
-  const [projectId, setProjectId] = useState(0);
-  const [project, setProject] = useState({ name: "My Tasks", columns: [] });
+  const [projectId, setProjectId] = useState(null);
+  // const [project, setProject] = useState({ name: "My Tasks", columns: [] });
+  const [boardColumns, setBoardColumns] = useState([]);
 
   useEffect(() => {
-    dataService.getProject(projectId).then((p) => {
-      setProject(p);
+    dataService.getBoardColumns(projectId).then((bc) => {
+      setBoardColumns(bc);
     });
   }, [dataService, projectId]);
 
@@ -38,53 +39,47 @@ export default function Home() {
     }
   };
 
+  const reloadColumns = () => {
+    dataService.getBoardColumns(projectId).then((bc) => {
+      setBoardColumns(bc);
+    });
+  }
+
   function finishNewColumn(val) {
     if (val.length === 0) {
       setShowAddColumnForm(false);
     } else {
       dataService.addColumn(val, projectId).then((t) => {
-        dataService.getProject(projectId).then((p) => {
-          setProject(p);
-        });
+        reloadColumns();
       });
 
       setShowAddColumnForm(false);
     }
   }
 
+  const getTasks = (columnId) => {
+    return dataService.getTasksByColumnId(columnId);
+  }
+
   const deleteTask = (t) => {
     dataService.deleteTask(t).then(() => {
-      dataService.getProject(projectId).then((p) => {
-        setProject(p);
-      });
+      reloadColumns();
     });
   };
 
-  const updateTask = (taskName, column) => {
-    dataService.addTask(taskName, projectId, column.id).then((t) => {
-      console.log("new Task created", t);
-      dataService.getProject(projectId).then((p) => {
-        setProject(p);
-      });
+  const addOrUpdateTask = (task) => {
+    dataService.addOrUpdateTask(task).then((t) => {
+      reloadColumns();
     });
   };
   const deleteColumn = (c) => {
     dataService.deleteColumn(c).then(() => {
-      dataService.getProject(projectId).then((p) => {
-        setProject(p);
-      });
+      reloadColumns();
     });
   };
 
-  const onDragEnd = (re) => {
+  const onDragEnd = (re) => {}; 
 
-  }
-
-  if (!project) {
-    return <div>Loading...</div>;
-  }
-
-  console.log("project", project);
   return (
     <div className="h-screen flex overflow-hidden">
       <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar}></Sidebar>
@@ -95,14 +90,15 @@ export default function Home() {
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex-1 bg-gray-50 overflow-auto">
             <main className="p-3  h-full inline-flex space-x-2 overflow-hidden ">
-              {project.columns.map((c, index) => {
+              {boardColumns.map((c, index) => {
                 return (
                   <BoardColumn
                     key={c.name}
                     column={c}
+                    getTasks={getTasks}
                     deleteTask={deleteTask}
                     dataService={dataService}
-                    updateTask={updateTask}
+                    addOrUpdateTask={addOrUpdateTask}
                     deleteColumn={deleteColumn}
                   ></BoardColumn>
                 );

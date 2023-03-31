@@ -10,9 +10,20 @@ import {
 import Task from "./Task";
 import { Droppable } from "react-beautiful-dnd";
 
-const BoardColumn = ({ column, deleteTask, updateTask, deleteColumn }) => {
+const BoardColumn = ({
+  column,
+  getTasks,
+  deleteTask,
+  addOrUpdateTask,
+  deleteColumn,
+}) => {
   const [showAddTaskForm, setShowAddTaskForm] = useState(false);
   const [showTaskContextMenu, setShowTaskContextMenu] = useState(false);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    getTasks(column.id).then((ts) => setTasks(ts));
+  }, [column, getTasks]);
 
   const onTextAreaKeyPress = (e) => {
     if (e.keyCode === 13) {
@@ -27,14 +38,14 @@ const BoardColumn = ({ column, deleteTask, updateTask, deleteColumn }) => {
     if (taskName.length === 0) {
       setShowAddTaskForm(false);
     } else {
-      updateTask(taskName, column);
+      addOrUpdateTask({ name: taskName, boardColumnId: column.id, done: false });
 
       setShowAddTaskForm(false);
     }
   };
 
   return (
-    <Droppable droppableId={column.id}>
+    <Droppable droppableId={column.name}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -86,9 +97,15 @@ const BoardColumn = ({ column, deleteTask, updateTask, deleteColumn }) => {
 
           <div className="flex-1 min-h-0 overflow-y-auto">
             <ul className="pt-1 pb-3 px-3">
-              {column.tasks.map((t, taskIndex) => {
+              {tasks.map((t, taskIndex) => {
                 return (
-                  <Task task={t} taskIndex={taskIndex} deleteTask={deleteTask} key={t.name}></Task>
+                  <Task
+                    task={t}
+                    taskIndex={taskIndex}
+                    deleteTask={deleteTask}
+                    updateTask={addOrUpdateTask}
+                    key={t.name}
+                  ></Task>
                 );
               })}
             </ul>

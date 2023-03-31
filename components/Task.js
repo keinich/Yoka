@@ -2,7 +2,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 
-const Task = ({ task, taskIndex, deleteTask }) => {
+const Task = ({ task, taskIndex, updateTask, deleteTask }) => {
   return (
     <Draggable index={taskIndex} draggableId={task.id.toString()}>
       {(provided) => (
@@ -14,8 +14,16 @@ const Task = ({ task, taskIndex, deleteTask }) => {
         >
           <a href="#" className="block p-5 rounded-md bg-white shadow">
             <div>
-              <div className="flex items-baseline justify-between">
-                <div className="px-3  py-1 bg-blue-200 rounded">
+              <div className="flex items-center justify-between">
+                <div className="px-1  py-1">
+                  <input
+                    type="checkbox"
+                    checked={task.done}
+                    onClick={(e) =>
+                      updateTask({ ...task, done: e.target.checked })
+                    }
+                    className="mr-2"
+                  ></input>
                   <span className="text-sm font-medium text-blue-500 leading-light">
                     {task.name}
                   </span>
